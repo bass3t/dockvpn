@@ -10,9 +10,9 @@ cd /etc/openvpn
 # This file tells `serveconfig` that there is a config there
 touch placeholder
 [ -f dh.pem ] ||
-    openssl dhparam -out dh.pem 1024
+    openssl dhparam -out dh.pem 2048
 [ -f key.pem ] ||
-    openssl genrsa -out key.pem 2048
+    openssl genrsa -out key.pem 4096
 chmod 600 key.pem
 [ -f csr.pem ] ||
     openssl req -new -key key.pem -out csr.pem -subj /CN=OpenVPN/
@@ -37,6 +37,13 @@ proto tcp-server
 port 443
 dev tun443
 status openvpn-status-443.log
+
+cipher AES-256-CBC
+
+tls-version-min 1.2
+tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA
+
+reneg-sec 600
 EOF
 
 [ -f udp1194.conf ] || cat >udp1194.conf <<EOF
@@ -57,6 +64,13 @@ proto udp
 port 1194
 dev tun1194
 status openvpn-status-1194.log
+
+cipher AES-256-CBC
+
+tls-version-min 1.2
+tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA
+
+reneg-sec 600
 EOF
 
 MY_IP_ADDR=$(curl -s http://myip.enix.org/REMOTE_ADDR)
